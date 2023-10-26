@@ -49,8 +49,17 @@ public class GameServiceImpl implements GameService {
     @Async
     @Override
     public void makeNewTurn(UUID sessionId) throws InterruptedException {
+        Thread.sleep(gameConfigs.sleepDuration().toMillis());
         log.trace("Next turn in session {}", sessionId);
         SessionWithAllTurns session = sessionRepository.findFetchTurnsBySessionId(sessionId);
+        log.debug(
+            "Session {}, status {}, turns {}, attacking bot {}, defending bot {}",
+            session.id(),
+            session.status(),
+            session.turns().size(),
+            session.attackingBotId(),
+            session.defendingBotId()
+        );
         final var turnsHistory = session.turns();
         int currTurn = turnsHistory.size();
         final URI currentBotUri;
@@ -111,7 +120,6 @@ public class GameServiceImpl implements GameService {
         Turn newTurn = turnBuilder.gameField(newGameField).build();
         sessionRepository.addTurnToSession(session.id(), newTurn);
         log.debug("Bot {} finished his turn", currentBotId);
-        Thread.sleep(gameConfigs.sleepDuration().toMillis());
         gameService.makeNewTurn(session.id());
     }
 

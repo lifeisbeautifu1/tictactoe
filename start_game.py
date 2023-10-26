@@ -88,7 +88,6 @@ bot_2_params = BotContainerParams(
 )
 
 bot_1_container = start_bot_container(bot_1_params)
-sleep(1)
 bot_2_container = start_bot_container(bot_2_params)
 mediator_client.watch_game()
 print(f"========SESSION {session_id} OVER, bot {mediator_client.winner} wins========")

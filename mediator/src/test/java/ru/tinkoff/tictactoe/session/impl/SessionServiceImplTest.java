@@ -11,8 +11,7 @@ import java.util.Date;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.tinkoff.tictactoe.session.Figure;
 import ru.tinkoff.tictactoe.session.GameService;
@@ -20,18 +19,20 @@ import ru.tinkoff.tictactoe.session.SessionRepository;
 import ru.tinkoff.tictactoe.session.exception.SessionIsAlreadyFullException;
 import ru.tinkoff.tictactoe.session.model.Session;
 import ru.tinkoff.tictactoe.session.model.SessionStatus;
+import ru.tinkoff.tictactoe.session.util.lock.LocalLock;
 
 @ExtendWith(MockitoExtension.class)
 class SessionServiceImplTest {
 
-    @Mock
-    private SessionRepository sessionRepositoryMock;
+    private final SessionRepository sessionRepositoryMock = Mockito.mock(SessionRepository.class);
 
-    @Mock
-    private GameService gameServiceMock;
+    private final GameService gameServiceMock = Mockito.mock(GameService.class);
 
-    @InjectMocks
-    private SessionServiceImpl sessionService;
+    private final SessionServiceImpl sessionService = new SessionServiceImpl(
+        sessionRepositoryMock,
+        gameServiceMock,
+        new LocalLock()
+    );
 
     //@DisplayName("JUnit test for createSession method")
     @Test

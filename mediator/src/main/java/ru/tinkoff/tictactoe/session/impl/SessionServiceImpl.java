@@ -1,5 +1,6 @@
 package ru.tinkoff.tictactoe.session.impl;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -10,10 +11,13 @@ import ru.tinkoff.tictactoe.session.Figure;
 import ru.tinkoff.tictactoe.session.GameService;
 import ru.tinkoff.tictactoe.session.SessionRepository;
 import ru.tinkoff.tictactoe.session.SessionService;
+import ru.tinkoff.tictactoe.session.exception.CannotFinishRegistration;
 import ru.tinkoff.tictactoe.session.exception.SessionIsAlreadyFullException;
 import ru.tinkoff.tictactoe.session.model.Session;
 import ru.tinkoff.tictactoe.session.model.SessionStatus;
 import ru.tinkoff.tictactoe.session.model.SessionWithLastTurn;
+import ru.tinkoff.tictactoe.session.util.lock.LocalLock;
+import ru.tinkoff.tictactoe.session.util.lock.LockException;
 
 @Slf4j
 @Service
@@ -22,6 +26,7 @@ public class SessionServiceImpl implements SessionService {
 
     private final SessionRepository sessionRepository;
     private final GameService gameService;
+    private final LocalLock lock;
 
     @Transactional
     @Override
@@ -31,18 +36,27 @@ public class SessionServiceImpl implements SessionService {
 
     @Transactional
     @Override
-    public Figure registerBotInSession(UUID sessionId, String url, String botId) throws InterruptedException {
-        Session session = sessionRepository.findBySessionId(sessionId);
-        if (session.status() != SessionStatus.NEW) {
-            throw new SessionIsAlreadyFullException();
+    public Figure registerBotInSession(UUID sessionId, String url, String botId) {
+        try {
+            log.trace("Bot {} starts registration in session {}", botId, sessionId);
+            return lock.lockRegistration(sessionId, Duration.ofSeconds(10), () -> {
+                Session session = sessionRepository.findBySessionId(sessionId);
+                if (session.status() != SessionStatus.NEW) {
+                    throw new SessionIsAlreadyFullException();
+                }
+                if (session.attackingBotUrl() == null) {
+                    sessionRepository.setAttackingBot(sessionId, url, botId);
+                    log.debug("Bot {} registered in session {} as attacking bot", botId, sessionId);
+                    return GameService.ATTACKING_BOT_FIGURE;
+                }
+                sessionRepository.setDefendingBot(sessionId, url, botId);
+                gameService.startGame(session.id());
+                log.debug("Bot {} registered in session {} as defending bot", botId, sessionId);
+                return GameService.DEFENDING_BOT_FIGURE;
+            });
+        } catch (LockException e) {
+            throw new CannotFinishRegistration(sessionId, e);
         }
-        if (session.attackingBotUrl() == null) {
-            sessionRepository.setAttackingBot(sessionId, url, botId);
-            return GameService.ATTACKING_BOT_FIGURE;
-        }
-        sessionRepository.setDefendingBot(sessionId, url, botId);
-        gameService.startGame(session.id());
-        return GameService.DEFENDING_BOT_FIGURE;
     }
 
     @Override

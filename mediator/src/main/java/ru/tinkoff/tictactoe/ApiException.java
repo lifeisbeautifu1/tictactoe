@@ -6,7 +6,11 @@ import org.springframework.web.ErrorResponse;
 public abstract class ApiException extends RuntimeException implements ErrorResponse {
 
     public ApiException(String message) {
-        super(message);
+        this(message, null);
+    }
+
+    public ApiException(String message, Throwable cause) {
+        super(message, cause);
     }
 
     @Override
