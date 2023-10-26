@@ -120,11 +120,20 @@ public class GameServiceImpl implements GameService {
         Turn newTurn = turnBuilder.gameField(newGameField).build();
         sessionRepository.addTurnToSession(session.id(), newTurn);
         log.debug("Bot {} finished his turn", currentBotId);
+
+        if (!newGameField.contains(Figure.EMPTY.getName())) {
+            finishGame(sessionId, null);
+        }
+
         gameService.makeNewTurn(session.id());
     }
 
     private void finishGame(UUID sessionId, String botId) {
-        log.info("GAME {} BOT {} WINS", sessionId, botId);
+        if (botId == null) {
+            log.info("GAME {} TIED", sessionId);
+        } else {
+            log.info("GAME {} BOT {} WINS", sessionId, botId);
+        }
         sessionRepository.finishSession(sessionId, botId);
     }
 }
