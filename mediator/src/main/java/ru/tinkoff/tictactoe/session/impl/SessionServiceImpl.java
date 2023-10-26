@@ -1,7 +1,10 @@
 package ru.tinkoff.tictactoe.session.impl;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +14,9 @@ import ru.tinkoff.tictactoe.session.Figure;
 import ru.tinkoff.tictactoe.session.GameService;
 import ru.tinkoff.tictactoe.session.SessionRepository;
 import ru.tinkoff.tictactoe.session.SessionService;
+import ru.tinkoff.tictactoe.session.exception.BotIsAlreadyRegistered;
 import ru.tinkoff.tictactoe.session.exception.CannotFinishRegistration;
+import ru.tinkoff.tictactoe.session.exception.IncorrectRegistrationDataException;
 import ru.tinkoff.tictactoe.session.exception.SessionIsAlreadyFullException;
 import ru.tinkoff.tictactoe.session.model.Session;
 import ru.tinkoff.tictactoe.session.model.SessionStatus;
@@ -38,11 +43,20 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public Figure registerBotInSession(UUID sessionId, String url, String botId) {
         try {
+            if (isBlank(url) || isBlank(botId)) {
+                throw new IncorrectRegistrationDataException(botId, url);
+            }
             log.trace("Bot {} starts registration in session {}", botId, sessionId);
             return lock.lockRegistration(sessionId, Duration.ofSeconds(10), () -> {
                 Session session = sessionRepository.findBySessionId(sessionId);
                 if (session.status() != SessionStatus.NEW) {
                     throw new SessionIsAlreadyFullException();
+                }
+                if (
+                    Objects.equals(session.attackingBotId(), botId)
+                        || Objects.equals(session.defendingBotId(), botId)
+                ) {
+                    throw new BotIsAlreadyRegistered(botId);
                 }
                 if (session.attackingBotUrl() == null) {
                     sessionRepository.setAttackingBot(sessionId, url, botId);
