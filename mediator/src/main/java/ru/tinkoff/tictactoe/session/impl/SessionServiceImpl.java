@@ -1,7 +1,5 @@
 package ru.tinkoff.tictactoe.session.impl;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -10,14 +8,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.tinkoff.tictactoe.commands.CommandService;
 import ru.tinkoff.tictactoe.session.Figure;
 import ru.tinkoff.tictactoe.session.GameService;
 import ru.tinkoff.tictactoe.session.SessionRepository;
 import ru.tinkoff.tictactoe.session.SessionService;
 import ru.tinkoff.tictactoe.session.exception.BotIsAlreadyRegistered;
 import ru.tinkoff.tictactoe.session.exception.CannotFinishRegistration;
-import ru.tinkoff.tictactoe.session.exception.IncorrectRegistrationDataException;
+import ru.tinkoff.tictactoe.session.exception.NotParticipantBot;
 import ru.tinkoff.tictactoe.session.exception.SessionIsAlreadyFullException;
+import ru.tinkoff.tictactoe.session.model.CreateSessionRequest;
 import ru.tinkoff.tictactoe.session.model.Session;
 import ru.tinkoff.tictactoe.session.model.SessionStatus;
 import ru.tinkoff.tictactoe.session.model.SessionWithLastTurn;
@@ -32,20 +32,20 @@ public class SessionServiceImpl implements SessionService {
     private final SessionRepository sessionRepository;
     private final GameService gameService;
     private final LocalLock lock;
+    private final CommandService commandService;
 
     @Transactional
     @Override
-    public Session createSession() {
-        return sessionRepository.createSession();
+    public Session createSession(CreateSessionRequest createSessionRequest) {
+        return sessionRepository.createSession(createSessionRequest);
     }
 
     @Transactional
     @Override
-    public Figure registerBotInSession(UUID sessionId, String url, String botId) {
+    public Figure registerBotInSession(UUID sessionId, String url, String botId, String password) {
         try {
-            if (isBlank(url) || isBlank(botId)) {
-                throw new IncorrectRegistrationDataException(botId, url);
-            }
+            log.trace("Bot {} starts credentials validation", botId);
+            commandService.validateCommandCredentials(botId, password);
             log.trace("Bot {} starts registration in session {}", botId, sessionId);
             return lock.lockRegistration(sessionId, Duration.ofSeconds(10), () -> {
                 Session session = sessionRepository.findBySessionId(sessionId);
@@ -57,6 +57,9 @@ public class SessionServiceImpl implements SessionService {
                         || Objects.equals(session.defendingBotId(), botId)
                 ) {
                     throw new BotIsAlreadyRegistered(botId);
+                }
+                if (!session.participantBots().contains(botId)) {
+                    throw new NotParticipantBot(sessionId, botId);
                 }
                 if (session.attackingBotUrl() == null) {
                     sessionRepository.setAttackingBot(sessionId, url, botId);

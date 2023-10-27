@@ -49,6 +49,7 @@ public class BotRegistrationServiceImpl implements BotRegistrationService {
         final var body = RegistrationRequest.builder()
             .botUrl(botUrl)
             .botId(botId)
+            .password(botConfig.botPassword())
             .build();
         ResponseEntity<RegistrationResponse> response = restTemplate.exchange(
             uri,

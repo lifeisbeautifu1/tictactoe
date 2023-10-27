@@ -6,6 +6,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -17,9 +20,12 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import ru.tinkoff.tictactoe.commands.persistance.postgres.CommandEntity;
 import ru.tinkoff.tictactoe.turn.persistance.postgres.TurnEntity;
 
 @Entity
@@ -46,7 +52,19 @@ public class SessionEntity {
 
     @OneToMany(mappedBy = "sessionEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<TurnEntity> turnEntities = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "command_sessions",
+        joinColumns = {@JoinColumn(name = "session_id")},
+        inverseJoinColumns = {@JoinColumn(name = "command_id")}
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<CommandEntity> participantBots;
 
     @Column(name = "status")
     private String status;

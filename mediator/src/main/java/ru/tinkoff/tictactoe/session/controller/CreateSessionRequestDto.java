@@ -2,14 +2,12 @@ package ru.tinkoff.tictactoe.session.controller;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import java.time.LocalDateTime;
-import java.util.UUID;
-import lombok.Builder;
+import jakarta.validation.constraints.NotEmpty;
+import java.util.Set;
 
-@Builder
 @JsonNaming(SnakeCaseStrategy.class)
-record CreateSessionResponseDto(
-    UUID sessionId,
-    LocalDateTime createdAt,
-    String status
-) {}
+record CreateSessionRequestDto(
+    @NotEmpty
+    Set<String> participantBots
+) {
+}

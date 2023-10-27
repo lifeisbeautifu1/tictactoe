@@ -1,5 +1,6 @@
 package ru.tinkoff.tictactoe.session.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +28,10 @@ public class SessionController {
     private final SessionMapper sessionMapper;
 
     @PostMapping("")
-    public CreateSessionResponseDto createSession() {
-        Session session = sessionService.createSession();
+    public CreateSessionResponseDto createSession(
+        @RequestBody @Valid CreateSessionRequestDto requestDto
+    ) {
+        Session session = sessionService.createSession(sessionMapper.toCreateSessionRequestDto(requestDto));
         return sessionMapper.toCreateSessionResponseDto(session);
     }
 
@@ -39,13 +42,16 @@ public class SessionController {
     }
 
     @PostMapping("/{session_id}/registration")
-    public RegisterBotResponseDto registerBotInSession(@PathVariable("session_id") UUID sessionId,
-                                                       @RequestBody RegisterBotRequestDto registerBotRequestDto)
+    public RegisterBotResponseDto registerBotInSession(
+        @PathVariable("session_id") UUID sessionId,
+        @RequestBody @Valid RegisterBotRequestDto registerBotRequestDto
+    )
         throws InterruptedException {
         Figure figure = sessionService.registerBotInSession(
             sessionId,
             registerBotRequestDto.botUrl(),
-            registerBotRequestDto.botId()
+            registerBotRequestDto.botId(),
+            registerBotRequestDto.password()
         );
         return new RegisterBotResponseDto(figure.getName());
     }

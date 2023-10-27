@@ -22,6 +22,7 @@ import ru.tinkoff.tictactoe.gamechecker.GameContinuesResult;
 import ru.tinkoff.tictactoe.gamechecker.GameWinResult;
 import ru.tinkoff.tictactoe.session.Figure;
 import ru.tinkoff.tictactoe.session.SessionRepository;
+import ru.tinkoff.tictactoe.session.model.CreateSessionRequest;
 import ru.tinkoff.tictactoe.session.model.Session;
 import ru.tinkoff.tictactoe.session.model.SessionStatus;
 import ru.tinkoff.tictactoe.session.model.SessionWithAllTurns;
@@ -251,7 +252,7 @@ class GameServiceImplTest {
         }
 
         @Override
-        public Session createSession() {
+        public Session createSession(CreateSessionRequest createSessionRequest) {
             throw new UnsupportedOperationException();
         }
 

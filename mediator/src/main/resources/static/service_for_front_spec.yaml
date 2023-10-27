@@ -7,6 +7,22 @@ info:
     email: nikinosov2002@mail.ru
   version: 1.0.0
 paths:
+  /commands/{commandId}:
+    put:
+      summary: Сохранить команду
+      parameters:
+        - name: commandId
+          in: path
+          description: Идентификатор команды
+      requestBody:
+        description: Пароль для команды
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Команда успешно сохранена
   /sessions:
     post:
       summary: Создать игровую сессию
@@ -93,6 +109,13 @@ paths:
           description: Не найдена игровая сессия с таким session_id и шагом turn
 components:
   schemas:
+    SessionCreateRequest:
+      type: object
+      properties:
+        participant_bots:
+          type: array
+          items:
+            type: string
     SessionCreateResponse:
       type: object
       properties:
@@ -100,6 +123,16 @@ components:
           type: string
           format: UUID
           example: "e58ed763-928c-4155-bee9-fdbaaadc15f3"
+        created_at:
+          type: string
+          format: date-time
+          example: "2018-03-20T09:12:28Z"
+        status:
+          type: string
+          enum:
+            - NEW
+            - ONGOING
+            - FINISHED
     SessionWithLastTurnResponseDto:
       type: object
       properties:

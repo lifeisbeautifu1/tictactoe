@@ -1,6 +1,7 @@
 package ru.tinkoff.tictactoe.session.model;
 
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Builder;
 
@@ -13,5 +14,6 @@ public record Session(
     String defendingBotId,
     SessionStatus status,
     Date updatedAt,
-    Date createdAt
+    Date createdAt,
+    Set<String> participantBots
 ) {}

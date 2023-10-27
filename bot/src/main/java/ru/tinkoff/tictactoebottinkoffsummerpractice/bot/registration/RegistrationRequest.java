@@ -8,5 +8,6 @@ import lombok.Builder;
 @JsonNaming(SnakeCaseStrategy.class)
 public record RegistrationRequest(
     String botUrl,
-    String botId
+    String botId,
+    String password
 ) {}

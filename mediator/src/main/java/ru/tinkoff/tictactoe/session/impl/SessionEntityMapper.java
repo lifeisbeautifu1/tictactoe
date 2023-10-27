@@ -1,9 +1,13 @@
 package ru.tinkoff.tictactoe.session.impl;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.util.List;
+import java.util.Set;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import ru.tinkoff.tictactoe.commands.persistance.postgres.CommandEntity;
 import ru.tinkoff.tictactoe.session.model.Session;
 import ru.tinkoff.tictactoe.session.model.SessionWithAllTurns;
 import ru.tinkoff.tictactoe.session.model.SessionWithLastTurn;
@@ -30,7 +34,13 @@ interface SessionEntityMapper {
 
     Turn fromTurnEntity(TurnEntity turnEntity);
 
+    @Mapping(target = "participantBots", source = "participantBots", qualifiedByName = "fromCommandEntities")
     Session toSession(SessionEntity sessionEntity);
+
+    @Named("fromCommandEntities")
+    default Set<String> fromCommandEntities(List<CommandEntity> commandEntityCollection) {
+        return commandEntityCollection.stream().map(CommandEntity::getCommandId).collect(toSet());
+    }
 
     List<Session> toListOfSession(List<SessionEntity> sessionEntities);
 }

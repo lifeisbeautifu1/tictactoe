@@ -5,7 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static java.lang.String.format;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import java.net.UnknownHostException;
+import java.util.Set;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,8 @@ import ru.tinkoff.tictactoe.integration.IntegrationSettings;
 import ru.tinkoff.tictactoe.session.GameService;
 import ru.tinkoff.tictactoe.session.SessionRepository;
 import ru.tinkoff.tictactoe.session.SessionService;
+import ru.tinkoff.tictactoe.session.model.CreateSessionRequest;
 import ru.tinkoff.tictactoe.session.model.Session;
-import ru.tinkoff.tictactoe.session.model.SessionWithAllTurns;
 
 @Disabled
 class GameServiceTest extends IntegrationSettings {
@@ -469,7 +469,10 @@ class GameServiceTest extends IntegrationSettings {
                                                                  "___________________" +
                                                                  "___________________" +
                                                                  "\"}")));
-        Session session = sessionService.createSession();
+        Session session = sessionService.createSession(new CreateSessionRequest(Set.of(
+            "attacking",
+            "defending"
+        )));
         sessionRepository.setAttackingBot(
             session.id(),
             format("http://%s:%d", firstBotIp, firstBotPort),

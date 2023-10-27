@@ -11,11 +11,14 @@ import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.tinkoff.tictactoe.commands.persistance.postgres.CommandEntity;
 import ru.tinkoff.tictactoe.session.SessionRepository;
 import ru.tinkoff.tictactoe.session.exception.SessionNotFoundException;
+import ru.tinkoff.tictactoe.session.model.CreateSessionRequest;
 import ru.tinkoff.tictactoe.session.model.Session;
 import ru.tinkoff.tictactoe.session.model.SessionStatus;
 import ru.tinkoff.tictactoe.session.model.SessionWithAllTurns;
@@ -38,9 +41,14 @@ public class SessionRepositoryImpl implements SessionRepository {
     private final EntityManager entityManager;
 
     @Override
-    public Session createSession() {
+    public Session createSession(CreateSessionRequest createSessionRequest) {
+        final var participantBots = createSessionRequest.participantBots()
+            .stream()
+            .map(commandId -> entityManager.getReference(CommandEntity.class, commandId))
+            .collect(Collectors.toList());
         SessionEntity sessionEntity = SessionEntity.builder()
             .status(SessionStatus.NEW.name())
+            .participantBots(participantBots)
             .build();
         TurnEntity turnEntity = TurnEntity.builder()
             .turn(0)

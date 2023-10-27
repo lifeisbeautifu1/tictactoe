@@ -8,6 +8,7 @@ public record BotConfig(
     String mediatorAddress,
     String botUrl,
     String botId,
+    String botPassword,
     UUID sessionUUID,
     int gameFieldSize
 ) {}
