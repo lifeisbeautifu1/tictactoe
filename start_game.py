@@ -74,7 +74,7 @@ def start_bot_container(bot_container_params: BotContainerParams):
         }
     )
 
-
+print(session_id + '%')
 print(f"================STARTING SESSION {session_id}===============")
 bot_1_params = BotContainerParams(
     sys.argv[1],
