@@ -18,10 +18,21 @@ export const getSession = async (session, cb) => {
   }, 1000)
 }
 
-export const startSession = () => {
-  return fetch('/sessions', {
-    method: 'POST'
-  }).then((data) => data.json())
+export const startSession = async (partitipant_bots) => {
+  return await fetch('/sessions', {
+    method: 'POST',
+    body: JSON.stringify({
+      "participant_bots": partitipant_bots
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  // .then((data) => {
+  //   let resp = data.json();
+  //   console.log(resp)
+  //   return resp
+  // })
 }
 
 export const getAllSession = () => {
@@ -30,13 +41,16 @@ export const getAllSession = () => {
   }).then((data) => data.json())
 }
 
-export const fetchStartGame = (form) => {
+export const fetchStartGame = (form, sessionId) => {
   return fetch('/api/start_game', {
     method: 'POST',
-    body: JSON.stringify(form),
+    body: JSON.stringify({
+      ...form,
+      'session_id': sessionId
+    }),
     headers: {
       'Content-Type': 'application/json;charset=utf-8'
     },
   })
-      .then((data) => data.json())
+  .then((data) => data.json())
 }

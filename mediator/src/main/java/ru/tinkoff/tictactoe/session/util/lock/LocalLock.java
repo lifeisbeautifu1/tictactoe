@@ -72,6 +72,9 @@ public class LocalLock {
 
     private void cleanSemaphores() {
         semaphores.replaceAll((key, semaphoreItem) -> {
+            if (isNull(semaphoreItem)) {
+                return null;
+            }
             final var timeAfterLastAccessElapsed = Duration.between(semaphoreItem.lastAccess(), clock.instant());
             if (timeAfterLastAccessElapsed.compareTo(SEMAPHORE_TTL) > 0) {
                 return null;

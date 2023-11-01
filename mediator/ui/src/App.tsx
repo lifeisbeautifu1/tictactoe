@@ -8,28 +8,8 @@ import { BiCircle } from 'react-icons/bi'
 
 
 import { useToast } from '@chakra-ui/react'
-import {getAllSession, fetchStartGame, getSession} from "./api";
+import {getAllSession, fetchStartGame, getSession, startSession} from "./api";
 
-const mockData =
-    'O__xx__xx_xxox_o_ox' +
-    'ox__ooo_xx_oo_oo__x' +
-    'o_oo__ooo__xoox___x' +
-    '_x____oo___x____ox_' +
-    '___xoo_x__xx_oxox__' +
-    'o__ox_x__xoxooo__oo' +
-    '_x_o_x_o__oo_o_____' +
-    'x_oxo___oxoox__x_x_' +
-    'xo_oxo__x__oox_xxxo' +
-    'x_o___o__xx__ooxxox' +
-    'xxxo_xo__o_________' +
-    '_xx_X_xo_o__xo_x_ox' +
-    'o_xX__o__xox_xo_O__' +
-    '__Xoox___x_xx_O_xox' +
-    'oXo___oxo__xO___o_o' +
-    'X__xxx_ox_x__oooxoo' +
-    'o___x_o___x__ox_xo_' +
-    '__xx_xoo____xoo_oox' +
-    'ox_____ox__xx_xox_x'
 
 const iconsMap = {
   '_': '',
@@ -86,13 +66,14 @@ function App() {
     return true;
   }
 
-  const handleStart = () => {
+  const handleStart = async () => {
 
     if(checkValidateForm()) {
 
       setStartingLoader(true);
 
-      fetchStartGame(botForm)
+      let sessionId = await startSession([botForm.bot1Id, botForm.bot2Id])
+      fetchStartGame(botForm, sessionId)
         .then(({session}) => {
           getSession(session, (data) => {
             console.log(data)
