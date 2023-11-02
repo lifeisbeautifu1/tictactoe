@@ -12,9 +12,13 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/sessions': {
+      '/api/sessions': {
         target: 'http://0.0.0.0:8080',
         changeOrigin: true,
+        rewrite: (url) => {
+          console.log(url.replace('/api', ''))
+          return url.replace('/api', '');
+        }
       }
     }
   }

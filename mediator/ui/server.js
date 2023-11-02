@@ -6,11 +6,11 @@ import { spawn } from 'child_process';
 const app = express();
 app.use(express.json());
 
-app.post("/api/start_game", (req, res, next) => {
+app.post("/api/start_game", (req, res) => {
 
   const {bot1Id, bot2Id, bot1Container, bot2Container, session_id} = req.body
   const python = spawn('python3', [
-    '../scripts/watch_session.py',
+    '../../scripts/watch_session.py',
     bot1Id,
     bot1Container,
     bot2Id,

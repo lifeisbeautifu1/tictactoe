@@ -2,7 +2,7 @@ export const getSession = async (session, cb) => {
   setTimeout(async () => {
     let data;
     try {
-      const response = await fetch(`/sessions/${session}`)
+      const response = await fetch(`/api/sessions/${session}`)
       data = await response.json();
 
       cb(data)
@@ -10,7 +10,8 @@ export const getSession = async (session, cb) => {
     } catch (e) {
       console.log(e)
     } finally {
-      if(data.status !== "FINISHED") {
+      console.log(data)
+      if(data.status !== "FINISHED" && data.status !== 404) {
         await getSession(session, cb)
       }
     }
@@ -19,26 +20,32 @@ export const getSession = async (session, cb) => {
 }
 
 export const startSession = async (partitipant_bots) => {
-  return await fetch('/sessions', {
+  return fetch('/api/sessions', {
     method: 'POST',
     body: JSON.stringify({
       "participant_bots": partitipant_bots
     }),
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json;charset=utf-8'
     }
+  }).then((response) => {
+    if (response.ok) {
+      return response.json();
+    }
+    throw new Error('Something went wrong');
   })
-  // .then((data) => {
-  //   let resp = data.json();
-  //   console.log(resp)
-  //   return resp
-  // })
 }
 
 export const getAllSession = () => {
-  return fetch('/sessions', {
+  return fetch('/api/sessions', {
     method: 'GET'
-  }).then((data) => data.json())
+  })
+  .then((response) => {
+    if (response.ok) {
+      return response.json();
+    }
+    throw new Error('Something went wrong');
+  })
 }
 
 export const fetchStartGame = (form, sessionId) => {
@@ -52,5 +59,10 @@ export const fetchStartGame = (form, sessionId) => {
       'Content-Type': 'application/json;charset=utf-8'
     },
   })
-  .then((data) => data.json())
+  .then((response) => {
+    if (response.ok) {
+      return response.json();
+    }
+    throw new Error('Something went wrong');
+  })
 }
