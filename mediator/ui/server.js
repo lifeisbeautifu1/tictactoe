@@ -1,14 +1,22 @@
 import express from 'express';
+import cors from 'cors';
 
 import { spawn } from 'child_process';
 
-
 const app = express();
+
+app.use(cors())
+
+
+const port = 3000;
+
+
 app.use(express.json());
 
-app.post("/api/start_game", (req, res) => {
+app.post("/api/start_game", (req, res, next) => {
 
   const {bot1Id, bot2Id, bot1Container, bot2Container, session_id} = req.body
+
   const python = spawn('python3', [
     '../../scripts/watch_session.py',
     bot1Id,
@@ -17,17 +25,16 @@ app.post("/api/start_game", (req, res) => {
     bot2Container,
     session_id
   ]);
-  let sent = false;
 
-    python.stdout.on('data', (data) => {
-        const session = data.toString().split('%')[0]
-        console.log(sent)
+    let sent = false;
+
+    python.stdout.on('data', () => {
         if(!sent) {
             sent = true
 
             res
                 .status(200)
-                .json({session})
+                .json({sent})
         }
     });
 
@@ -36,4 +43,6 @@ app.post("/api/start_game", (req, res) => {
     });
 });
 
-export const handler = app;
+app.listen(port, () => {
+    console.log(`BFF on port ${port}`)
+})

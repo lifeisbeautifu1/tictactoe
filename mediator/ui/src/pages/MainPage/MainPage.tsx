@@ -45,8 +45,6 @@ const MainPage = () => {
 
       setStartingLoader(true);
 
-      await getAllSession()
-
       try {
         const sessionData = await startSession([botForm.bot1Id, botForm.bot2Id])
 
@@ -54,7 +52,7 @@ const MainPage = () => {
 
         await fetchStartGame(botForm, sessionData.session_id);
 
-        navigate(`/game/${sessionData.session_id}`);
+        navigate(`/games/${sessionData.session_id}`);
 
       } catch (e) {
         toast({title: 'На сервере произошла ошибка', description: e.message, status: 'error'})

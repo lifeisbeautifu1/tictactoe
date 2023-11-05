@@ -51,8 +51,17 @@ const PlaygroundPage = () => {
   return (
     <div className='playground-wrap'>
       <div className='playground-info'>
-        <div className='winner'>Winner: {activeSession?.win_bot || '_'}</div>
-        <div className='turn'>Turn: {activeSession?.last_turn?.turn}</div>
+
+        <div className='playground-info_left'>
+          <div>{activeSession?.attacking_bot_id} - {iconsMap['o']} </div>
+          <div>{activeSession?.defending_bot_id} - {iconsMap['x']}</div>
+        </div>
+
+        <div className='playground-info_right'>
+          <div className='winner'>Winner: {activeSession?.win_bot || '_'}</div>
+          <div className='turn'>Turn: {activeSession?.last_turn?.turn}</div>
+        </div>
+
       </div>
       <div className='playground'>
         {activeSession?.last_turn?.game_field.split('').map((char) => {

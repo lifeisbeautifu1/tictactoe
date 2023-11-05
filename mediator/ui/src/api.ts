@@ -49,7 +49,7 @@ export const getAllSession = () => {
 }
 
 export const fetchStartGame = (form, sessionId) => {
-  return fetch('/api/start_game', {
+  return fetch('http://localhost:3000/api/start_game', {
     method: 'POST',
     body: JSON.stringify({
       ...form,
