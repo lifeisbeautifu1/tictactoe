@@ -53,8 +53,8 @@ const PlaygroundPage = () => {
       <div className='playground-info'>
 
         <div className='playground-info_left'>
-          <div>{activeSession?.attacking_bot_id} - {iconsMap['o']} </div>
-          <div>{activeSession?.defending_bot_id} - {iconsMap['x']}</div>
+          <div>{activeSession?.attacking_bot_id} - {iconsMap['x']} </div>
+          <div>{activeSession?.defending_bot_id} - {iconsMap['o']}</div>
         </div>
 
         <div className='playground-info_right'>

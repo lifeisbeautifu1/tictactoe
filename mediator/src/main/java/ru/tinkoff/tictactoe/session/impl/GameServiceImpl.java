@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.tinkoff.tictactoe.client.BotClient;
 import ru.tinkoff.tictactoe.client.BotRequest;
 import ru.tinkoff.tictactoe.client.BotResponse;
-import ru.tinkoff.tictactoe.client.exception.BotResponseStatusCodeNotOkException;
 import ru.tinkoff.tictactoe.gamechecker.GameChecker;
 import ru.tinkoff.tictactoe.gamechecker.GameWinResult;
 import ru.tinkoff.tictactoe.gamechecker.WinCheckerResults;
@@ -91,9 +90,9 @@ public class GameServiceImpl implements GameService {
         final BotResponse botResponse;
         try {
             botResponse = botClient.makeTurn(currentBotUri, new BotRequest(currGameField));
-        } catch (BotResponseStatusCodeNotOkException e) {
+        } catch (Exception e) {
             // Если бот ответил ошибкой, тогда заканчиваем игру
-            log.warn("Bot {} responded not 200 http code", currentBotId);
+            log.warn("Bot {} responded incorrect", currentBotId, e);
             finishGame(sessionId, oppositeBotId);
             return;
         }
@@ -103,7 +102,7 @@ public class GameServiceImpl implements GameService {
         try {
             gameChecker.validate(currGameField, newGameField, currentFigure);
         } catch (ValidCheckerException e) {
-            // Если бот ответил невалидным полем, то не меняем поле и передаем ход другому боту
+            // Если бот ответил невалидным полем, тогда заканчиваем игру
             log.warn("Bot {} responded incorrect new field {}", currentBotId, newGameField);
             finishGame(sessionId, oppositeBotId);
             return;

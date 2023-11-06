@@ -42,7 +42,7 @@ services:
     ports:
       - "${DB_EXTERNAL_PORT}:${DB_INTERNAL_PORT}"
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data
+      - ../postgres/data:/var/lib/postgresql/data
     networks:
       - internal
 

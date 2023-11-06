@@ -47,7 +47,7 @@ paths:
     post:
       tags:
         - bot
-      summary: Попросить бота сделать ход
+      summary: Запрос бота сделать ход
       description: Бот получает текущее игровое поле и возвращает новое игровое поле (сделав новый ход)
       operationId: makeAMove
       requestBody:
