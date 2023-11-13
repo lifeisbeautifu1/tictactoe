@@ -38,30 +38,31 @@ public class BotRegistrationServiceImpl implements BotRegistrationService {
         UUID sessionUUID = botConfig.sessionUUID();
         log.info("Попытка зарегистрировать бота {} с url {} в сессии {}", botId, botUrl, sessionUUID);
         log.debug("Отправляем запрос для регистрации бота в сессии");
-        final var uri = UriComponentsBuilder
-            .fromUriString("{basePath}/sessions/{sessionId}/registration")
-            .buildAndExpand(Map.of(
-                "basePath", botConfig.mediatorAddress(),
-                "sessionId", sessionUUID
-            ))
-            .encode()
-            .toUri();
-        final var body = RegistrationRequest.builder()
-            .botUrl(botUrl)
-            .botId(botId)
-            .password(botConfig.botPassword())
-            .build();
-        ResponseEntity<RegistrationResponse> response = restTemplate.exchange(
-            uri,
-            POST,
-            new HttpEntity<>(body),
-            RegistrationResponse.class
-        );
-        log.debug("Ответ получен {}", response);
-        if (response.getStatusCode() != OK) {
-            throw new BotRegistrationException();
-        }
-        this.figure = response.getBody().figure();
+        // final var uri = UriComponentsBuilder
+        //     .fromUriString("{basePath}/sessions/{sessionId}/registration")
+        //     .buildAndExpand(Map.of(
+        //         "basePath", botConfig.mediatorAddress(),
+        //         "sessionId", sessionUUID
+        //     ))
+        //     .encode()
+        //     .toUri();
+        // final var body = RegistrationRequest.builder()
+        //     .botUrl(botUrl)
+        //     .botId(botId)
+        //     .password(botConfig.botPassword())
+        //     .build();
+        // ResponseEntity<RegistrationResponse> response = restTemplate.exchange(
+        //     uri,
+        //     POST,
+        //     new HttpEntity<>(body),
+        //     RegistrationResponse.class
+        // );
+        // log.debug("Ответ получен {}", response);
+        // if (response.getStatusCode() != OK) {
+        //     throw new BotRegistrationException();
+        // }
+        // this.figure = response.getBody().figure();
+		this.figure = Figure.fromString("x");
         log.debug("Бот успешно зарегистрирован в сессии {}", sessionUUID);
         log.info("Успешно зарегистрирован. Буду ходить фигурой {}", figure);
     }

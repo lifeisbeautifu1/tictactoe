@@ -4,7 +4,7 @@ server:
 config:
   session-uuid: ${SESSION_ID}
   bot-url: ${BOT_URL}
-  bot-id: ${BOT_ID}
-  bot-password: ${BOT_PASSWORD}
+  bot-id: ourId
+  bot-password: ourPassword
   mediator-address: ${MEDIATOR_URL}
   game-field-size: 19
