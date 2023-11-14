@@ -7,37 +7,27 @@ import ru.tinkoff.tictactoebottinkoffsummerpractice.bot.BotService;
 import ru.tinkoff.tictactoebottinkoffsummerpractice.bot.Figure;
 import ru.tinkoff.tictactoebottinkoffsummerpractice.bot.registration.BotRegistrationService;
 import ru.tinkoff.tictactoebottinkoffsummerpractice.config.BotConfig;
+import ru.tinkoff.tictactoebottinkoffsummerpractice.bot.AppModel;
+
 
 @Service
 public class StupidBotService implements BotService {
 
-    private final Figure figure;
-    private final int fieldFlattenSize;
+	private final AppModel appModel;
 
     public StupidBotService(
         BotRegistrationService registrationService,
         BotConfig botConfig
     ) {
-        int gameFieldSize = botConfig.gameFieldSize();
-        fieldFlattenSize = gameFieldSize * gameFieldSize;
-        figure = registrationService.getFigure();
+        Figure figure = registrationService.getFigure();
+		appModel = new AppModel(figure.getName());
     }
 
     @Override
     public String makeTurnByGameField(String gameField) {
-        final var newTurnIdx = generateNewRandomTurnIdx(gameField);
-        final var builder = new StringBuilder(gameField);
-        builder.replace(newTurnIdx, newTurnIdx + 1, figure.getName());
-        return builder.toString();
-    }
-
-    int generateNewRandomTurnIdx(String gameField) {
-        return Stream.generate(() -> ThreadLocalRandom.current().nextInt(0, fieldFlattenSize))
-            .dropWhile(turnIdx -> {
-                final var currentValue = gameField.substring(turnIdx, turnIdx + 1);
-                return !Figure.EMPTY.getName().equals(currentValue);
-            })
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("There is no field to make new turn"));
+		this.appModel.sync(gameField);
+		this.appModel.show();
+		this.appModel.makeTurn();
+		return this.appModel.getGameField();
     }
 }
