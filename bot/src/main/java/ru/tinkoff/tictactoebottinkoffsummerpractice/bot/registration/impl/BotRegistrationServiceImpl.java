@@ -62,7 +62,7 @@ public class BotRegistrationServiceImpl implements BotRegistrationService {
         //     throw new BotRegistrationException();
         // }
         // this.figure = response.getBody().figure();
-		this.figure = Figure.fromString("o");
+		this.figure = Figure.fromString("x");
         log.debug("Бот успешно зарегистрирован в сессии {}", sessionUUID);
         log.info("Успешно зарегистрирован. Буду ходить фигурой {}", figure);
     }

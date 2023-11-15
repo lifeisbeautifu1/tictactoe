@@ -25,8 +25,8 @@ public class StupidBotService implements BotService {
 
     @Override
     public String makeTurnByGameField(String gameField) {
-		this.appModel.sync(gameField);
-		this.appModel.makeTurn();
-		return this.appModel.getGameField();
+			this.appModel.sync(gameField);
+			this.appModel.makeTurn();
+			return this.appModel.getGameField();
     }
 }
