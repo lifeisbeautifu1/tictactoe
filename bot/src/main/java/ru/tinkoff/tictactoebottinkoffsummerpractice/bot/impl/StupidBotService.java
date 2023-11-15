@@ -20,13 +20,12 @@ public class StupidBotService implements BotService {
         BotConfig botConfig
     ) {
         Figure figure = registrationService.getFigure();
-		appModel = new AppModel(figure.getName());
+				appModel = new AppModel(figure.getName());
     }
 
     @Override
     public String makeTurnByGameField(String gameField) {
 		this.appModel.sync(gameField);
-		this.appModel.show();
 		this.appModel.makeTurn();
 		return this.appModel.getGameField();
     }

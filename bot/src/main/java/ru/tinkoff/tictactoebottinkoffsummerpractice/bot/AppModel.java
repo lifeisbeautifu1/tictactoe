@@ -1,136 +1,4 @@
-// package ru.tinkoff.tictactoebottinkoffsummerpractice.bot;
 
-// import java.util.HashMap;
-// import java.util.Map;
-// import java.util.Random;
-// import java.util.regex.Pattern;
-
-// public class AppModel {
-//     private int n;
-//     private int m;
-//     private int size = 19;
-//     private boolean who; // Логическая переменная - кто сейчас ходит: true - X, false - O
-//     private int[][] matrix; // Матрица игрового поля 19х19. 0 - свободная клетка, 1 - крестик, 2 - нолик
-//     private int freeCells; // Количество свободных ячеек. В начале каждой игры = 361
-//     private Map<Integer, Map<Integer, Cell>> hashStep; // Хеш-массив потенциальных ходов
-//     private boolean playing; // True - игра в процессе игры (пользователь может кликать на поле и т.д.)
-//     private int[] winLine; // Координаты победной линии
-//     private Pattern[] patternWin; // Массив выигрышных шаблонов [1] и [2] и шаблон определения возможности поставить 5 в ряд
-//     private Direction[] directions; // Направления расчета потенциальных ходов
-//     private int step; // Счетчик ходов игры
-//     private int[][] prePattern = { // Шаблоны построения фигрур и их веса. Х в дальнейшем заменяется на крестик (1) или нолик (0), 0 - свободная ячейка
-//             {99999, 7000, 4000, 4000, 2000, 2000, 2000, 2000, 2000, 2000, 3000, 1500, 1500, 800, 800, 800, 800, 200},
-//             {0b11111, 0b011110, 0b11110, 0b0111, 0b0110110, 0b0110110, 0b0110110, 0b0110110, 0b0110110, 0b0110110, 0b01110, 0b0111, 0b1110, 0b011010, 0b011010, 0b010110, 0b010110, 0b0110}
-//     };
-//     private int[][][] pattern; // Массив шаблонов для Х и 0, генерируется из предыдущих шаблонов
-
-//     private class Cell {
-//         int sum;
-//         int attack;
-//         int defence;
-//         int attackPattern;
-//         int defencePattern;
-
-//         public Cell(int sum, int attack, int defence, int attackPattern, int defencePattern) {
-//             this.sum = sum;
-//             this.attack = attack;
-//             this.defence = defence;
-//             this.attackPattern = attackPattern;
-//             this.defencePattern = defencePattern;
-//         }
-//     }
-
-//     private class Direction {
-//         int n;
-//         int m;
-//         int w;
-
-//         public Direction(int n, int m, int w) {
-//             this.n = n;
-//             this.m = m;
-//             this.w = w;
-//         }
-//     }
-
-//     public AppModel() {
-//         init();
-//     }
-
-//     private void init() {
-//         hashStep = new HashMap<>();
-//         patternWin = new Pattern[]{null, Pattern.compile("1{5}"), Pattern.compile("2{5}"), Pattern.compile("[01]*7[01]*"), Pattern.compile("[02]*7[02]*")};
-//         directions = new Direction[24];
-//         int index = 0;
-//         for (int n = -2; n <= 2; n++) {
-//             for (int m = -2; m <= 2; m++) {
-//                 if (n == 0 && m == 0)
-//                     continue;
-//                 if (Math.abs(n) <= 1 && Math.abs(m) <= 1)
-//                     directions[index++] = new Direction(n, m, 3);
-//                 else if (Math.abs(n) == Math.abs(m) || n * m == 0)
-//                     directions[index++] = new Direction(n, m, 2);
-//                 else
-//                     directions[index++] = new Direction(n, m, 1);
-//             }
-//         }
-//     }
-
-//     public void setStartData(int a) {
-//         who = true;
-//         matrix = new int[size][size];
-//         winLine = new int[0];
-//         hashStep.clear();
-//         freeCells = size * size;
-//         for (int n = 0; n < size; n++) {
-//             for (int m = 0; m < size; m++) {
-//                 matrix[n][m] = 0;
-//             }
-//         }
-//         step = 0;
-//         playing = true;
-//         if (a == 2)
-//             System.out.println("New Game! X - AI, O - user");
-//         else
-//             System.out.println("New Game! X - user, O - AI");
-//     }
-
-//     public void setNM(int a) {
-//         n = a / size;
-//         m = a % size;
-//     }
-
-//     public boolean emptyCell() {
-//         return matrix[n][m] == 0;
-//     }
-
-//     public int moveAI() {
-//         playing = false;
-//         int max = 0;
-//         calculateHashMovePattern();
-//         for (Map<Integer, Cell> row : hashStep.values()) {
-//             for (Cell cell : row.values()) {
-//                 if (cell.sum > max)
-//                     max = cell.sum;
-//             }
-//         }
-//         int[][] goodmoves = new int[hashStep.size()][2];
-//         int index = 0;
-//         for (Map.Entry<Integer, Map<Integer, Cell>> entry : hashStep.entrySet()) {
-//             int n = entry.getKey();
-//             Map<Integer, Cell> row = entry.getValue();
-//             for (int m : row.keySet()) {
-//                 if (row.get(m).sum == max) {
-//                     goodmoves[index][0] = n;
-//                     goodmoves[index][1] = m;
-//                     index++;
-//                 }
-//             }
-//         }
-//         int[] movenow = goodmoves[new Random().nextInt(index)];
-//         n = movenow[0];
-//         m = movenow[1];
-//         return move(n, m, true);
-//     }
 
 //     private int move(int n, int m, boolean aiStep) {
 //         hashStep.remove(n);
@@ -168,105 +36,35 @@
 //         return n * size + m;
 //     }
 
-//     private void calculateHashMove(boolean attack) {
-//         for (Direction direction : directions) {
-//             int n = this.n + direction.n;
-//             int m = this.m + direction.m;
-//             if (n < 0 || m < 0 || n >= size || m >= size)
-//                 continue;
-//             if (matrix[n][m] != 0)
-//                 continue;
-//             hashStep.computeIfAbsent(n, k -> new HashMap<>()).put(m, new Cell(0, 0, 0, 0, 0));
-//             if (attack)
-//                 hashStep.get(n).get(m).attack += direction.w;
-//             else
-//                 hashStep.get(n).get(m).defence += direction.w;
-//         }
-//     }
 
-//     private void calculateHashMovePattern() {
-//         for (Map.Entry<Integer, Map<Integer, Cell>> entry : hashStep.entrySet()) {
-//             int n = entry.getKey();
-//             Map<Integer, Cell> row = entry.getValue();
-//             for (Map.Entry<Integer, Cell> cellEntry : row.entrySet()) {
-//                 int m = cellEntry.getKey();
-//                 Cell cell = cellEntry.getValue();
-//                 cell.sum = cell.attack + cell.defence;
-//                 cell.attackPattern = 0;
-//                 cell.defencePattern = 0;
-//                 for (int q = 1; q <= 2; q++) {
-//                     for (int j = 1; j <= 4; j++) {
-//                         StringBuilder s = new StringBuilder();
-//                         for (int i = -4; i <= 4; i++) {
-//                             switch (j) {
-//                                 case 1:
-//                                     if (n + i >= 0 && n + i < size)
-//                                         s.append(i == 0 ? '7' : matrix[n + i][m]);
-//                                     break;
-//                                 case 2:
-//                                     if (m + i >= 0 && m + i < size)
-//                                         s.append(i == 0 ? '7' : matrix[n][m + i]);
-//                                     break;
-//                                 case 3:
-//                                     if (n + i >= 0 && n + i < size && m + i >= 0 && m + i < size)
-//                                         s.append(i == 0 ? '7' : matrix[n + i][m + i]);
-//                                     break;
-//                                 case 4:
-//                                     if (n - i >= 0 && n - i < size && m + i >= 0 && m + i < size)
-//                                         s.append(i == 0 ? '7' : matrix[n - i][m + i]);
-//                                     break;
-//                             }
-//                         }
-//                         Pattern pattern = q == 1 ? Pattern.compile(Integer.toBinaryString(prePattern[q][j])) : Pattern.compile(Integer.toBinaryString(prePattern[q][j]), Pattern.LITERAL);
-//                         if (pattern.matcher(s).find()) {
-//                             if (q == 1) {
-//                                 for (int i = 0; i < pattern[0].length; i++) {
-//                                     if (pattern[0][i] == '1')
-//                                         cell.attackPattern += prePattern[0][i];
-//                                 }
-//                             } else {
-//                                 for (int i = 0; i < pattern[0].length; i++) {
-//                                     if (pattern[0][i] == '1')
-//                                         cell.defencePattern += prePattern[0][i];
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 }
-//                 cell.sum += 1.1 * cell.attackPattern + cell.defencePattern;
-//             }
-//         }
-//     }
-// }
 package ru.tinkoff.tictactoebottinkoffsummerpractice.bot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class AppModel {
-	// Game Matrix 19x19
-	// 0 - free cell, 1 - x, 2 - o
 	private int[][] matrix;
-	// Current row index
 	private int n;
-	// Current col index
 	private int m;
-	// Amount of free cells
-	private int freeCells;
-	// Playing figure
+	private int size;
 	private int me;
+	private HashMap<Integer, HashMap<Integer, Cell>> hashStep;
 	private List<TurnPattern> prePattern;
 	private List<Integer> patternWeight;
 	private List<Pattern> patternForX;
 	private List<Pattern> patternForO;
 	private List<Direction> directions;
+	private Pattern[] patternWin;
 
 	public AppModel(String figure) {
-		this.matrix = new int[19][19];
-		this.freeCells = 19 * 19;
-		this.n = 0;
-		this.m = 0;
+		this.size = 19;
+		this.matrix = new int[this.size][this.size];
+		this.n = -1;
+		this.m = -1;
 
 		switch(figure) {
 			case "x":
@@ -296,6 +94,14 @@ public class AppModel {
         prePattern.add(new TurnPattern("xx0x0", 800));
         prePattern.add(new TurnPattern("x0xx0", 800));
         prePattern.add(new TurnPattern("0xx0", 200));
+
+		this.patternWin = new Pattern[]{
+			Pattern.compile("0"),
+			Pattern.compile("(1){5}"),
+			Pattern.compile("(2){5}"),
+			Pattern.compile("[01]*7[01]*"),
+			Pattern.compile("[02]*7[02]*"),
+		};
 
 		this.patternWeight = new ArrayList<>();
 		this.patternForX = new ArrayList<>();
@@ -332,6 +138,13 @@ public class AppModel {
                     this.directions.add(new Direction(n, m, 1));
             }
         }
+
+		this.hashStep = new HashMap<Integer, HashMap<Integer, Cell>>();
+
+		// первый шаг, если АИ играет за Х
+		var value = new HashMap<Integer, Cell>();
+		value.put(9, new Cell(0, 1, 0, 0, 0));
+		this.hashStep.put(9, value);
 	}
 
 	public void sync(String gameField) {
@@ -341,13 +154,30 @@ public class AppModel {
 					case 'x':
 						if (this.matrix[i][j] != 1) {
 							this.matrix[i][j] = 1;
-							this.freeCells -= 1;
+
+							this.n = i;
+							this.m = j;
+
+							if (this.hashStep.containsKey(this.n)) {
+								var entry = this.hashStep.get(this.n);
+								if (entry.containsKey(this.m)) {
+									entry.remove(this.m);
+								}
+							}
 						}
 						break;
 					case 'o':
 						if (this.matrix[i][j] != 2) {
 							this.matrix[i][j] = 2;
-							this.freeCells -= 1;
+							this.n = i;
+							this.m = j;
+
+							if (this.hashStep.containsKey(this.n)) {
+								var entry = this.hashStep.get(this.n);
+								if (entry.containsKey(this.m)) {
+									entry.remove(this.m);
+								}
+							}
 						}
 						break;
 				}
@@ -362,37 +192,197 @@ public class AppModel {
 			}
 			System.out.println("");
 		}
-
-		System.out.println("Free cells: " + this.freeCells);
 	}
 
+    public void moveAI() {
+        int max = 0;
+
+        this.calculateHashMovePattern();
+
+        for (HashMap<Integer, Cell> row : hashStep.values()) {
+            for (Cell cell : row.values()) {
+                if (cell.sum > max)
+                    max = cell.sum;
+            }
+        }
+
+		var goodmoves = new ArrayList<Move>();
+
+        for (HashMap.Entry<Integer, HashMap<Integer, Cell>> entry : hashStep.entrySet()) {
+            int n = entry.getKey();
+
+            HashMap<Integer, Cell> row = entry.getValue();
+
+            for (int m : row.keySet()) {
+                if (row.get(m).sum == max) {
+                    goodmoves.add(new Move(n, m));
+                }
+            }
+        }
+
+        Move move = goodmoves.get(new Random().nextInt(goodmoves.size()));
+
+		this.n = move.n;
+		this.m = move.m;
+    }
+
+	private void calculateHashMovePattern() {
+		int attack;
+		int defence;
+
+		if (this.me == 1) {
+			attack = 1;
+			defence = 2;
+		} else {
+			attack = 2;
+			defence = 1;
+		}
+
+		for (HashMap.Entry<Integer, HashMap<Integer, Cell>> entry : hashStep.entrySet()) {
+            int n = entry.getKey();
+
+            HashMap<Integer, Cell> row = entry.getValue();
+
+            for (HashMap.Entry<Integer, Cell> cellEntry : row.entrySet()) {
+
+                int m = cellEntry.getKey();
+
+                Cell cell = cellEntry.getValue();
+
+                cell.sum = cell.attack + cell.defence;
+                cell.attackPattern = 0;
+                cell.defencePattern = 0;
+
+                for (int q = 1; q <= 2; q++) {
+                    for (int j = 1; j <= 4; j++) {
+                        StringBuilder s = new StringBuilder();
+                        for (int i = -4; i <= 4; i++) {
+                            switch (j) {
+                                case 1:
+                                    if (n + i >= 0 && n + i < this.size)
+                                        s.append(i == 0 ? '7' : this.matrix[n + i][m]);
+                                    break;
+                                case 2:
+                                    if (m + i >= 0 && m + i < this.size)
+                                        s.append(i == 0 ? '7' : this.matrix[n][m + i]);
+                                    break;
+                                case 3:
+                                    if (n + i >= 0 && n + i < this.size && m + i >= 0 && m + i < this.size)
+                                        s.append(i == 0 ? '7' : this.matrix[n + i][m + i]);
+                                    break;
+                                case 4:
+                                    if (n - i >= 0 && n - i < this.size && m + i >= 0 && m + i < this.size)
+                                        s.append(i == 0 ? '7' : this.matrix[n - i][m + i]);
+                                    break;
+                            }
+                        }
+
+                        Pattern pattern = q == 1 ? this.patternWin[2 + attack] : this.patternWin[2 + defence];
+
+						Matcher matcher = pattern.matcher(s);
+
+						if (matcher.find()) {
+							String res = s.substring(matcher.start(), matcher.end());
+
+							if (res.length() < 5) {
+								continue;
+							}
+							if (q == 1) {
+								if (attack == 1) {
+									for (int k = 0; k < this.patternForX.size(); ++k) {
+										if (Pattern.matches(this.patternForX.get(k).pattern(), s)) {
+											cell.attackPattern += this.patternWeight.get(k);
+										}
+									}
+								} else {
+									for (int k = 0; k < this.patternForO.size(); ++k) {
+										if (Pattern.matches(this.patternForO.get(k).pattern(), s)) {
+											cell.attackPattern += this.patternWeight.get(k);
+										}
+									}
+								}
+							} else {
+								if (attack == 1) {
+									for (int k = 0; k < this.patternForO.size(); ++k) {
+										if (Pattern.matches(this.patternForO.get(k).pattern(), s)) {
+											cell.defencePattern += this.patternWeight.get(k);
+										}
+									}
+								} else {
+									for (int k = 0; k < this.patternForX.size(); ++k) {
+										if (Pattern.matches(this.patternForX.get(k).pattern(), s)) {
+											cell.defencePattern += this.patternWeight.get(k);
+										}
+									}
+								}
+
+							}
+						}
+                    }
+                }
+                cell.sum += 1.1 * cell.attackPattern + cell.defencePattern;
+            }
+        }
+    }
+
+	private void calculateHashMove(boolean attack) {
+        for (Direction direction : this.directions) {
+            int n = this.n + direction.n;
+            int m = this.m + direction.m;
+
+            if (n < 0 || m < 0 || n >= this.size || m >= this.size)
+                continue;
+
+            if (matrix[n][m] != 0)
+                continue;
+
+            hashStep.computeIfAbsent(n, k -> new HashMap<>());
+			hashStep.get(n).computeIfAbsent(m, k -> new Cell(0, 0, 0, 0, 0));
+
+            if (attack)
+                hashStep.get(n).get(m).attack += direction.w;
+            else
+                hashStep.get(n).get(m).defence += direction.w;
+        }
+    }
+
 	public void makeTurn() {
+		this.moveAI();
+
+		// !
+		if (this.hashStep.containsKey(this.n)) {
+			var entry = this.hashStep.get(this.n);
+
+			if (entry.containsKey(this.m)) {
+				entry.remove(this.m);
+			}
+		}
+
 		this.matrix[this.n][this.m] = this.me;
-		this.n += 1;
-		this.m += 1;
-		this.freeCells -= 1;
+
+		this.calculateHashMove(true);
 	}
 
 	public String getGameField() {
-		String gameField = "";
+		StringBuilder gameField = new StringBuilder();
 
 		for (int i = 0; i < 19; ++i) {
 			for (int j = 0; j < 19; ++j) {
 				switch(this.matrix[i][j]) {
 					case 0:
-						gameField += '_';
+						gameField.append('_');
 						break;
 					case 1:
-						gameField += 'x';
+						gameField.append('x');
 						break;
 					case 2:
-						gameField += 'o';
+						gameField.append('o');
 						break;
 				}
 			}
 		}
 
-		return gameField;
+		return gameField.toString();
 	}
 
 	private class TurnPattern {
@@ -420,5 +410,31 @@ public class AppModel {
 			return "n: " + this.n + " m: " + this.m + " w: " + this.w + "\n";
 		}
     }
+
+	private class Cell {
+        int sum;
+        int attack;
+        int defence;
+        int attackPattern;
+        int defencePattern;
+
+        public Cell(int sum, int attack, int defence, int attackPattern, int defencePattern) {
+            this.sum = sum;
+            this.attack = attack;
+            this.defence = defence;
+            this.attackPattern = attackPattern;
+            this.defencePattern = defencePattern;
+        }
+    }
+
+	private class Move {
+		int n;
+		int m;
+
+		public Move(int n, int m) {
+			this.n = n;
+			this.m = m;
+		}
+	}
 
 }
