@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 function App() {
   const [gameField, setGameField] = useState(
-    new Array(15).fill(0).map(() => new Array(15).fill("_"))
+    new Array(19).fill(0).map(() => new Array(19).fill("_"))
   );
 
   const [makeTurn, setMakeTurn] = useState(false);
@@ -20,7 +20,7 @@ function App() {
       });
       const data = await res.json();
       setGameField(
-        data["game_field"].match(/.{1,15}/g).map((row) => row.split(""))
+        data["game_field"].match(/.{1,19}/g).map((row) => row.split(""))
       );
       setMakeTurn(false);
     };
@@ -36,7 +36,7 @@ function App() {
               <input
                 maxLength={1}
                 value={char}
-                key={15 * rowIndex + colIndex}
+                key={19 * rowIndex + colIndex}
                 onChange={(event) => {
                   setGameField((p) =>
                     p.map((row, rowIdx) =>

@@ -1,42 +1,3 @@
-
-
-//     private int move(int n, int m, boolean aiStep) {
-//         hashStep.remove(n);
-//         hashStep.values().forEach(row -> row.remove(m));
-//         matrix[n][m] = 2 - (who ? 1 : 0);
-//         who = !who;
-//         freeCells--;
-//         String[] s = new String[4];
-//         int nT = Math.min(n, 4);
-//         int nR = Math.min(size - m - 1, 4);
-//         int nB = Math.min(size - n - 1, 4);
-//         int nL = Math.min(m, 4);
-//         for (int j = n - nT; j <= n + nB; j++)
-//             s[0] += matrix[j][m];
-//         for (int i = m - nL; i <= m + nR; i++)
-//             s[1] += matrix[n][i];
-//         for (int i = -Math.min(nT, nL); i <= Math.min(nR, nB); i++)
-//             s[2] += matrix[n + i][m + i];
-//         for (int i = -Math.min(nB, nL); i <= Math.min(nR, nT); i++)
-//             s[3] += matrix[n - i][m + i];
-//         int t = matrix[this.n][this.m];
-//         int k;
-//         if ((k = s[0].indexOf(patternWin[t].pattern())) >= 0)
-//             winLine = new int[]{m, n - nT + k, m, n - nT + k + 4};
-//         else if ((k = s[1].indexOf(patternWin[t].pattern())) >= 0)
-//             winLine = new int[]{m - nL + k, n, m - nL + k + 4, n};
-//         else if ((k = s[2].indexOf(patternWin[t].pattern())) >= 0)
-//             winLine = new int[]{m - Math.min(nT, nL) + k, n - Math.min(nT, nL) + k, m - Math.min(nT, nL) + k + 4, n - Math.min(nT, nL) + k + 4};
-//         else if ((k = s[3].indexOf(patternWin[t].pattern())) >= 0)
-//             winLine = new int[]{m - Math.min(nB, nL) + k, n + Math.min(nB, nL) - k, m - Math.min(nB, nL) + k + 4, n + Math.min(nB, nL) - k - 4, -1};
-//         playing = freeCells != 0 && winLine.length == 0;
-//         if (playing)
-//             calculateHashMove(aiStep);
-//         System.out.println(++step + ": " + n + ", " + m);
-//         return n * size + m;
-//     }
-
-
 package ru.tinkoff.tictactoebottinkoffsummerpractice.bot;
 
 import java.util.ArrayList;
@@ -61,7 +22,7 @@ public class AppModel {
 	private Pattern[] patternWin;
 
 	public AppModel(String figure) {
-		this.size = 15;
+		this.size = 19;
 		this.matrix = new int[this.size][this.size];
 		this.n = -1;
 		this.m = -1;
@@ -124,16 +85,6 @@ public class AppModel {
 			patternForO.add(Pattern.compile(s.replace("x", "2")));
 		}
 
-		// for (var weight : this.patternWeight) {
-		// 	System.out.println("PATERN WEIGHT " + weight);
-		// }
-		// for (var p : this.patternForX) {
-		// 	System.out.println("PATERN FOR X " + p);
-		// }
-		// for (var p : this.patternForO) {
-		// 	System.out.println("PATERN FOR O " + p);
-		// }
-
 		this.directions = new ArrayList<>();
 
 		for (int n = -2; n <= 2; n++) {
@@ -149,23 +100,17 @@ public class AppModel {
             }
         }
 
-		// System.out.println("DIRECTIONS!!!");
-		// for (Direction direction : this.directions) {
-		// 	System.out.println(direction);
-		// }
-
 		this.hashStep = new HashMap<Integer, HashMap<Integer, Cell>>();
 
-		// первый шаг, если АИ играет за Х
 		var value = new HashMap<Integer, Cell>();
-		value.put(7, new Cell(0, 1, 0, 0, 0));
-		this.hashStep.put(7, value);
+		value.put(9, new Cell(0, 1, 0, 0, 0));
+		this.hashStep.put(9, value);
 	}
 
 	public void sync(String gameField) {
-		for (int i = 0; i < 15; ++i) {
-			for (int j = 0; j < 15; ++j) {
-				switch(gameField.charAt(i * 15 + j)) {
+		for (int i = 0; i < 19; ++i) {
+			for (int j = 0; j < 19; ++j) {
+				switch(gameField.charAt(i * 19 + j)) {
 					case 'x':
 						if (this.matrix[i][j] != 1) {
 							this.matrix[i][j] = 1;
@@ -201,15 +146,6 @@ public class AppModel {
 
 		if (this.n != -1 && this.m != -1) {
 			this.calculateHashMove(false);
-		}
-	}
-
-	public void show() {
-		for (int i = 0; i < 15; ++i) {
-			for (int j = 0; j < 15; ++j) {
-				System.out.print(this.matrix[i][j]);
-			}
-			System.out.println("");
 		}
 	}
 
@@ -312,13 +248,8 @@ public class AppModel {
 
 						Matcher matcher = pattern.matcher(s);
 
-						// System.out.println("STRING is " + s);
-
 						if (matcher.find()) {
-							// System.out.println("FOUND SOMETHING!!!");
 							String res = s.substring(matcher.start(), matcher.end());
-
-							// System.out.println("RESULT: " + res);
 
 							if (res.length() < 5) {
 								continue;
@@ -385,7 +316,6 @@ public class AppModel {
 	public void makeTurn() {
 		this.moveAI();
 
-		// !
 		if (this.hashStep.containsKey(this.n)) {
 			var entry = this.hashStep.get(this.n);
 
@@ -402,8 +332,8 @@ public class AppModel {
 	public String getGameField() {
 		StringBuilder gameField = new StringBuilder();
 
-		for (int i = 0; i < 15; ++i) {
-			for (int j = 0; j < 15; ++j) {
+		for (int i = 0; i < 19; ++i) {
+			for (int j = 0; j < 19; ++j) {
 				switch(this.matrix[i][j]) {
 					case 0:
 						gameField.append('_');
