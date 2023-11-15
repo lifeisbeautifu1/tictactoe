@@ -20,7 +20,7 @@ public class StupidBotService implements BotService {
         BotConfig botConfig
     ) {
         Figure figure = registrationService.getFigure();
-				appModel = new AppModel(figure.getName());
+		appModel = new AppModel(figure.getName());
     }
 
     @Override
